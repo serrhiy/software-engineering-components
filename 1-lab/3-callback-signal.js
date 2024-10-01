@@ -22,8 +22,9 @@ const enumerate = (array) => ({
 });
 
 const map = (array, process, signal, onFinish) => {
-  const items = [];
+  const result = new Array(array.length);
   let finished = false;
+  let count = 0;
   signal.addEventListener('abort', () => {
     finished = true;
     onFinish(signal.reason, null);
@@ -35,13 +36,10 @@ const map = (array, process, signal, onFinish) => {
         finished = true;
         return void onFinish(error, null);
       }
-      items.push({ index, item: processed });
-      if (items.length === array.length) {
-        const sorted = items.sort((a, b) => a.index - b.index);
-        const result = sorted.map((value) => value.item);
-        onFinish(null, result);
-      }}),
-    );
+      result[index] = processed;
+      count++;
+      if (count === array.length) onFinish(null, result);
+    }));
   }
 };
 
