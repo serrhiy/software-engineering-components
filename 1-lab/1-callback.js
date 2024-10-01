@@ -10,6 +10,7 @@ const once = (fn) => {
 };
 
 const map = (array, process, onFinish) => {
+  if (array.length === 0) return void onFinish(null, []);
   const result = new Array(array.length);
   let finished = false;
   let index = 0;

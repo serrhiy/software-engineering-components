@@ -22,6 +22,7 @@ const enumerate = (array) => ({
 });
 
 const map = (array, process, signal, onFinish) => {
+  if (array.length === 0) return void onFinish(null, []);
   const result = new Array(array.length);
   let finished = false;
   let count = 0;
