@@ -1,19 +1,18 @@
 'use strict';
 
 const map = (array, process) => new Promise((resolve, reject) => {
-  const items = [];
+  if (array.length === 0) return void resolve([]);
+  const result = new Array(array.length);
   let index = 0;
+  let count = 0;
   let finished = false;
   for (const item of array) {
     const itemsIndex = index++;
     process(item).then((processed) => {
       if (finished) return;
-      items.push({ index: itemsIndex, item: processed });
-      if (items.length === array.length) {
-        const sorted = items.sort((a, b) => a.index - b.index);
-        const result = sorted.map((value) => value.item);
-        resolve(result);
-      }
+      result[itemsIndex] = processed;
+      count++;
+      if (count === array.length) resolve(result);
     }).catch((error) => {
       if (finished) return;
       finished = true;
@@ -22,6 +21,6 @@ const map = (array, process) => new Promise((resolve, reject) => {
   }
 });
 
-const processArray = (item) => Promise.reject(item * 2);
+const processArray = (item) => Promise.resolve(item * 2);
 
 map([1, 2, 3, 4], processArray).then(console.log, console.error);
