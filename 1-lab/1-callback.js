@@ -10,9 +10,10 @@ const once = (fn) => {
 };
 
 const map = (array, process, onFinish) => {
-  const items = [];
+  const result = new Array(array.length);
   let finished = false;
   let index = 0;
+  let count = 0;
   for (const item of array) {
     const itemIndex = index++;
     process(item, once((error, processed) => {
@@ -21,12 +22,9 @@ const map = (array, process, onFinish) => {
         finished = true;
         return void onFinish(error, null);
       }
-      items.push({ index: itemIndex, item: processed });
-      if (items.length === array.length) {
-        const sorted = items.sort((a, b) => a.index - b.index);
-        const result = sorted.map((value) => value.item);
-        onFinish(null, result);
-      }
+      result[itemIndex] = processed;
+      count++;
+      if (count === array.length) onFinish(null, result);
     }));
   }
 };
